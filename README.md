@@ -1,6 +1,12 @@
-# Active Storage Bunny 
+# Active Storage Bunny
 
-Active Storage Bunny is a gem that integrates BunnyCDN storage services with Active Storage. This gem acts as an adapter to add BunnyCDN as a service to Active Storage.
+[Bunny](https://bunny.net/storage/) is a fast, powerful, cheap and reliable CDN service and offers a storage service that can be used to store files which is a great alternative to Amazon S3, Azure, and Google Cloud Storage.
+
+Active Storage Bunny is a gem that integrates BunnyCDN Storage services with Active Storage. This gem acts as an adapter to add BunnyCDN as a service to Active Storage.
+
+This uses [BunnyStorage Client](https://github.com/rkwap/bunny_storage_client?tab=readme-ov-file#bunnystorage-client) gem to interact with BunnyCDN storage services.
+
+[![Gem Version](https://badge.fury.io/rb/active_storage_bunny.svg)](https://badge.fury.io/rb/active_storage_bunny)
 
 ## Table of Contents
 
