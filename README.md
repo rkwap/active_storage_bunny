@@ -1,6 +1,6 @@
-# ActiveStorageBunny 
+# Active Storage Bunny 
 
-ActiveStorageBunny is a gem that integrates BunnyCDN storage services with Active Storage. This gem acts as an adapter to add BunnyCDN as a service to Active Storage.
+Active Storage Bunny is a gem that integrates BunnyCDN storage services with Active Storage. This gem acts as an adapter to add BunnyCDN as a service to Active Storage.
 
 ## Table of Contents
 
@@ -34,7 +34,7 @@ $ gem install active_storage_bunny
 
 - Ruby version >= 2.5
 - Rails version >= 6.0
-- BunnyStorageClient gem (will be installed as a dependency)
+- [BunnyStorage Client gem](https://rubygems.org/gems/bunny_storage_client) (will be installed as a dependency)
 
 ## Configuration
 
