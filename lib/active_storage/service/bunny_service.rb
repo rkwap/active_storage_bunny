@@ -32,10 +32,16 @@ module ActiveStorage
     end
 
     def download(key, &block)
-      instrument :download, key: key do
-        io = StringIo.new object_for(key).get_file
+      if block_given?
+        instrument :streaming_download, { key: key } do
+          stream(key, &block)
+        end
+      else
+        instrument :download, key: key do
+          io = StringIo.new object_for(key).get_file
 
-        io
+          io
+        end
       rescue StandardError
         raise ActiveStorage::FileNotFoundError
       end
@@ -107,8 +113,15 @@ module ActiveStorage
       raise ActiveStorage::IntegrityError
     end
 
-    def stream_file(key)
-      # BunnyStorageClient does not natively support this operation yet.
+    def stream(key, options = {}, &block)
+      io = object_for(key).get_file
+      io.binmode
+
+      chunk_size = 5.megabytes
+
+      while chunk = io.read(chunk_size)
+        yield chunk
+      end
     end
 
     def object_for(key)
