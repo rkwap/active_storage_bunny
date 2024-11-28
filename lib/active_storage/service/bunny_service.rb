@@ -61,6 +61,15 @@ module ActiveStorage
       end
     end
 
+    def url(key, expires_in:, disposition:, filename:, **options)
+      instrument :url, {key: key} do |payload|
+        url = private_url expires_in: expires_in, disposition: disposition, filename: filename
+        payload[:url] = url
+
+        url
+      end
+    end
+
     def url_for_direct_upload(key, expires_in:, content_type:, content_length:, checksum:, custom_metadata: {})
       instrument :url, key: key do |payload|
         generated_url = object_for(key).presigned_url :put, expires_in: expires_in.to_i,
