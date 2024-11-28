@@ -48,9 +48,10 @@ module ActiveStorage
     end
 
     def delete_prefixed(prefix)
-      instrument :delete_prefixed, prefix: prefix do
-        # BunnyStorageClient does not natively support this operation yet.
-      end
+      delete prefix
+      # instrument :delete_prefixed, prefix: prefix do
+      #   # BunnyStorageClient does not natively support this operation yet.
+      # end
     end
 
     def exist?(key)
@@ -63,7 +64,7 @@ module ActiveStorage
 
     def url(key, expires_in:, disposition:, filename:, **options)
       instrument :url, {key: key} do |payload|
-        url = private_url expires_in: expires_in, disposition: disposition, filename: filename
+        url = public_url key
         payload[:url] = url
 
         url
