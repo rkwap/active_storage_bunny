@@ -49,9 +49,11 @@ Configure Active Storage to use the Bunny service by adding the following to you
 ```yaml
 bunny:
   service: Bunny
-  access_key: <%= ENV['BUNNY_ACCESS_KEY'] %>
-  api_key: <%= ENV['BUNNY_API_KEY'] %>
-  storage_zone: <%= ENV['BUNNY_STORAGE_ZONE'] %>
+  access_key: <%= Rails.application.credentials.dig(:bunny, :access_key) %>
+  # the API key for cache purging
+  api_key: <%= Rails.application.credentials.dig(:bunny, :api_key) %>
+  storage_zone: your-app-production
+  region: la # leave blank for Falkenstein
 ```
 
 Then, in your environment configuration file (e.g., `config/environments/production.rb`), set the Active Storage service:

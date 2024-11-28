@@ -8,12 +8,11 @@ module ActiveStorage
   # See ActiveStorage::Service for the generic API documentation that applies to all services.
   class Service::BunnyService < Service
 
-    CDN_BASE_URL = "https://#{ENV['BUNNY_STORAGE_ZONE']}.b-cdn.net"
-
     attr_reader :client
 
-    def initialize(access_key:, api_key:, storage_zone:, **options)
-      @client = BunnyStorageClient.new(access_key, api_key, storage_zone)
+    def initialize(access_key:, api_key:, storage_zone:, region:, **options)
+      @client = BunnyStorageClient.new(access_key, api_key, storage_zone, region)
+      @cdn_base_url = "https://#{storage_zone}.b-cdn.net"
       super(**options)
     end
 
@@ -78,7 +77,7 @@ module ActiveStorage
     end
 
     def public_url(key)
-      File.join(CDN_BASE_URL, key)
+      File.join(@cdn_base_url, key)
     end
 
     def upload_with_single_part(key, io, checksum: nil, content_type: nil, content_disposition: nil, custom_metadata: {})
