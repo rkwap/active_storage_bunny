@@ -39,8 +39,6 @@ module ActiveStorage
           io
         end
       end
-    rescue StandardError
-      raise ActiveStorage::FileNotFoundError
     end
 
     def delete(key)
@@ -58,7 +56,7 @@ module ActiveStorage
 
     def exist?(key)
       instrument :exist, key: key do |payload|
-        answer = object_for(key).exists?
+        answer = object_for(key).exist?
         payload[:exist] = answer
         answer
       end
@@ -110,8 +108,7 @@ module ActiveStorage
     end
 
     def stream(key, options = {}, &block)
-      io = object_for(key).get_file
-      io.binmode
+      io = StringIO.new object_for(key).get_file
 
       chunk_size = 5.megabytes
 
