@@ -14,13 +14,9 @@ module ActiveStorage
       @client = BunnyStorageClient.new(access_key, api_key, storage_zone, region)
 
       if cdn
-        @base_url = "https://#{storage_zone}.b-cdn.net"
+        @base_url = cdn
       else
-        if region != nil
-          @base_url = "https://#{region}.storage.bunnycdn.com/#{storage_zone}"
-        else
-          @base_url = "https://storage.bunnycdn.com/#{storage_zone}"
-        end
+        @base_url = "https://#{storage_zone}.b-cdn.net"
       end
     end
 
@@ -42,9 +38,9 @@ module ActiveStorage
 
           io
         end
-      rescue StandardError
-        raise ActiveStorage::FileNotFoundError
       end
+    rescue StandardError
+      raise ActiveStorage::FileNotFoundError
     end
 
     def delete(key)
