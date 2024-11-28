@@ -33,7 +33,7 @@ module ActiveStorage
 
     def download(key, &block)
       instrument :download, key: key do
-        io = StringIo.new object_for(key)
+        io = StringIo.new object_for(key).get_file
 
         io
       rescue StandardError
