@@ -10,9 +10,19 @@ module ActiveStorage
 
     attr_reader :client
 
-    def initialize(access_key:, api_key:, storage_zone:, region:, **options)
+    def initialize(access_key:, api_key:, storage_zone:, region:, cdn: false, **options)
       @client = BunnyStorageClient.new(access_key, api_key, storage_zone, region)
-      @cdn_base_url = "https://#{storage_zone}.b-cdn.net"
+
+      if cdn
+        @base_url = "https://#{storage_zone}.b-cdn.net"
+      else
+        if region != nil
+          @base_url = "https://#{region}.storage.bunnycdn.com/#{storage_zone}"
+        else
+          @base_url = "https://storage.bunnycdn.com/#{storage_zone}"
+        end
+      end
+
       super(**options)
     end
 
@@ -79,7 +89,7 @@ module ActiveStorage
     end
 
     def public_url(key)
-      File.join(@cdn_base_url, key)
+      File.join(@base_url, key)
     end
 
     def upload_with_single_part(key, io, checksum: nil, content_type: nil, content_disposition: nil, custom_metadata: {})

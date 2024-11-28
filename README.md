@@ -54,6 +54,7 @@ bunny:
   api_key: <%= Rails.application.credentials.dig(:bunny, :api_key) %>
   storage_zone: your-app-production
   region: la # leave blank for Falkenstein
+  cdn: true # use https://#{storage_zone}.b-cdn.net
 ```
 
 Then, in your environment configuration file (e.g., `config/environments/production.rb`), set the Active Storage service:
