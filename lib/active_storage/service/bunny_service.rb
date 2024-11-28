@@ -25,7 +25,9 @@ module ActiveStorage
 
     def download(key, &block)
       instrument :download, key: key do
-        object_for(key).get_file.to_s.force_encoding(Encoding::BINARY)
+        io = StringIo.new object_for(key)
+
+        io
       rescue StandardError
         raise ActiveStorage::FileNotFoundError
       end
