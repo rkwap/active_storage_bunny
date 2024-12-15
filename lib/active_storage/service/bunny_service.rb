@@ -34,7 +34,7 @@ module ActiveStorage
         end
       else
         instrument :download, key: key do
-          io = StringIo.new object_for(key).get_file
+          io = StringIO.new object_for(key).get_file
 
           io
         end
