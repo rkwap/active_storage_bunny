@@ -8,7 +8,7 @@ module ActiveStorage
   # See ActiveStorage::Service for the generic API documentation that applies to all services.
   class Service::BunnyService < Service
 
-    attr_reader :client
+    attr_reader :client, :base_url
 
     def initialize(access_key:, api_key:, storage_zone:, region:, cdn: false)
       @client = BunnyStorageClient.new(access_key, api_key, storage_zone, region)
