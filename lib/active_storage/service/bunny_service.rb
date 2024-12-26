@@ -97,7 +97,7 @@ module ActiveStorage
     end
 
     def public_url(key)
-      File.join(@base_url, key)
+      File.join(base_url, key)
     end
 
     def upload_with_single_part(key, io, checksum: nil, content_type: nil, content_disposition: nil, custom_metadata: {})
