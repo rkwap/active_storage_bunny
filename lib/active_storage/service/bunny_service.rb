@@ -109,6 +109,7 @@ module ActiveStorage
 
     def stream(key, options = {}, &block)
       io = StringIO.new object_for(key).get_file
+      io.set_encoding(Encoding::BINARY)
 
       chunk_size = 5.megabytes
 
