@@ -8,13 +8,16 @@ module ActiveStorage
   # See ActiveStorage::Service for the generic API documentation that applies to all services.
   class Service::BunnyService < Service
 
-    CDN_BASE_URL = "https://#{ENV['BUNNY_STORAGE_ZONE']}.b-cdn.net"
+    attr_reader :client, :base_url
 
-    attr_reader :client
+    def initialize(access_key:, api_key:, storage_zone:, region:, cdn: false)
+      @client = BunnyStorageClient.new(access_key, api_key, storage_zone, region)
 
-    def initialize(access_key:, api_key:, storage_zone:, **options)
-      @client = BunnyStorageClient.new(access_key, api_key, storage_zone)
-      super(**options)
+      if cdn
+        @base_url = cdn
+      else
+        @base_url = "https://#{storage_zone}.b-cdn.net"
+      end
     end
 
     def upload(key, io, checksum: nil, filename: nil, content_type: nil, disposition: nil, custom_metadata: {}, **)
@@ -25,10 +28,16 @@ module ActiveStorage
     end
 
     def download(key, &block)
-      instrument :download, key: key do
-        object_for(key).get_file.to_s.force_encoding(Encoding::BINARY)
-      rescue StandardError
-        raise ActiveStorage::FileNotFoundError
+      if block_given?
+        instrument :streaming_download, { key: key } do
+          stream(key, &block)
+        end
+      else
+        instrument :download, key: key do
+          io = StringIO.new object_for(key).get_file
+
+          io.set_encoding(Encoding::BINARY)
+        end
       end
     end
 
@@ -39,16 +48,26 @@ module ActiveStorage
     end
 
     def delete_prefixed(prefix)
-      instrument :delete_prefixed, prefix: prefix do
-        # BunnyStorageClient does not natively support this operation yet.
-      end
+      delete prefix
+      # instrument :delete_prefixed, prefix: prefix do
+      #   # BunnyStorageClient does not natively support this operation yet.
+      # end
     end
 
     def exist?(key)
       instrument :exist, key: key do |payload|
-        answer = object_for(key).exists?
+        answer = object_for(key).exist?
         payload[:exist] = answer
         answer
+      end
+    end
+
+    def url(key, expires_in:, disposition:, filename:, **options)
+      instrument :url, {key: key} do |payload|
+        url = public_url key
+        payload[:url] = url
+
+        url
       end
     end
 
@@ -78,7 +97,7 @@ module ActiveStorage
     end
 
     def public_url(key)
-      File.join(CDN_BASE_URL, key)
+      File.join(base_url, key)
     end
 
     def upload_with_single_part(key, io, checksum: nil, content_type: nil, content_disposition: nil, custom_metadata: {})
@@ -88,8 +107,15 @@ module ActiveStorage
       raise ActiveStorage::IntegrityError
     end
 
-    def stream_file(key)
-      # BunnyStorageClient does not natively support this operation yet.
+    def stream(key, options = {}, &block)
+      io = StringIO.new object_for(key).get_file
+      io.set_encoding(Encoding::BINARY)
+
+      chunk_size = 5.megabytes
+
+      while chunk = io.read(chunk_size)
+        yield chunk
+      end
     end
 
     def object_for(key)
